@@ -12,3 +12,7 @@ type = process # can be 'process' for services that need to be restarted in case
 command = "udhcpc -i eth0 -f" # <- '-f' needed here!!!
 dependencies = mdev,mount # or 'none'
 ```
+
+## Goals
+- [ ] Add systemd-like targets
+- [ ] Use D-Bus
