@@ -59,6 +59,20 @@ void mountdevfs()
     }
 }
 
+bool mountsys()
+{
+    namespace fs = std::filesystem;
+    const fs::path mnt = "/sys";
+    info("Mounting sysfs on /sys");
+    if (!fs::exists(mnt))
+    {
+        if (mkdir(mnt.c_str(), 0755) != 0 ) { error(std::format("Can't mount sysfs on /sys: {}", strerror(errno))); return false; }
+    }
+
+    if (mount("sysfs", mnt.c_str(), "sysfs", 0, nullptr) != 0) { error(std::format("Can't mount sysfs on /sys: {}", strerror(errno))); return false; }
+    return true;
+}
+
 bool is_uefi()
 {
     return std::filesystem::exists("/sys/firmware/efi");
@@ -73,17 +87,12 @@ void mountefivarfs()
     else
         info("The system is running in UEFI mode. Mounting the efivarfs at /sys/firmware/efi/efivars");
 
-    if (is_mounted(mnt.c_str()))
-    {
-        info("/sys/firmware/efi/efivars already mounted");
-    }
-
     if (!fs::exists(mnt))
     {
         mkdir(mnt.c_str(), 0755);
     }
 
-    if (mount("efivarfs", mnt.c_str(), "efivarfs", 0, nullptr) != 0)
+    if (mount("efivarfs", mnt.c_str(), "efivarfs", MS_RDONLY, nullptr) != 0)
     {
         error(std::format("Can't mount efivarfs on /sys/firmware/efi/efivars: {}", strerror(errno)));
     }
@@ -132,6 +141,9 @@ int main()
         mountdevfs();
     if (!is_mounted("/run"))
         mountrun();
+    if (!is_mounted("/sys"))
+        if (mountsys())
+            mountefivarfs();
 
     if (!std::filesystem::exists("/etc/zinit.conf")) { panic("Can't find config file"); }
     std::unordered_map<std::string, std::string> configMap = parseFile("/etc/zinit.conf");
