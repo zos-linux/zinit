@@ -1,0 +1,4 @@
+name = getty@tty1
+dependencies = mount,mdev
+type = process
+command = "getty -L ttyS0 115200 vt100"

@@ -1,0 +1,4 @@
+name = boot 
+type = oneshot
+dependencies = mount,mdev,elogind
+command = true

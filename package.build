@@ -1,0 +1,33 @@
+#!/bin/bash
+
+PKGNAME="zinit"
+PKGVERSION="1.0"
+ARCH=$(uname -m)
+MINVERSION="1.0"
+DEPENDENCIES="glibc,gcc"
+DESTPKG=$PKGNAME-$PKGVERSION-$ARCH.pkg
+LOCAL=1
+
+package_build()
+{
+  mkdir build
+  cd build
+  $CFLAGS $CXXFLAGS meson setup --prefix=/usr ..
+  ninja "$MAKEOPTS"
+}
+
+package_createpkg()
+{
+  PKGROOT=$PWD
+  cd build
+  mkdir -p $PKGNAME-$PKGVERSION-$ARCH/package
+  DESTDIR=$PKGNAME-$PKGVERSION-$ARCH/package ninja install
+  mv $PKGNAME-$PKGVERSION-$ARCH/package/usr/sbin/zinit $PKGNAME-$PKGVERSION-$ARCH/package/usr/sbin/init
+  cp -raf $PKGROOT/pkginfo .
+  sed -i 's/<arch>/$ARCH/g' pkginfo
+  cp -raf $PKGROOT/scripts/*.bash .
+  cd $PKGNAME-$PKGVERSION-$ARCH/package
+  createpkglist ..
+  cd ..
+  createpkg -o ../$PKGNAME-$PKGVERSION-$ARCH
+}

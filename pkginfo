@@ -1,0 +1,5 @@
+PKGNAME = zinit
+PKGVERSION = 1.0.0
+DEPENDENCIES = glibc,gcc
+MINVERSION = 1.0
+ARCH = <arch>

@@ -1,0 +1,4 @@
+name = udhcpc
+type = process
+command = "udhcpc -f -i eth0"
+dependencies = mdev,mount

@@ -1,0 +1,4 @@
+name = mdev
+type = oneshot
+command = /etc/zinit.d/scripts/mdev.sh
+dependencies = mount

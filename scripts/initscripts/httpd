@@ -1,0 +1,4 @@
+command = "httpd -p 8080 -f"
+type = process
+name = httpd
+dependencies = mdev,mount

@@ -1,0 +1,6 @@
+buildDir
+scripts/busybox
+scripts/initramfs-tmp
+scripts/initramfs.img
+.idea
+build
