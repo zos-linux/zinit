@@ -66,7 +66,10 @@ bool mountsys()
     info("Mounting sysfs on /sys");
     if (!fs::exists(mnt))
     {
-        if (mkdir(mnt.c_str(), 0755) != 0 ) { error(std::format("Can't mount sysfs on /sys: {}", strerror(errno))); return false; }
+        if (mkdir(mnt.c_str(), 0755) != 0 )
+        {
+            error(std::format("Can't mount sysfs on /sys: {}", strerror(errno))); return false;
+        }
     }
 
     if (mount("sysfs", mnt.c_str(), "sysfs", 0, nullptr) != 0) { error(std::format("Can't mount sysfs on /sys: {}", strerror(errno))); return false; }
@@ -113,6 +116,23 @@ void mountrun()
     mkdir("/run/zinit", 0755);
 }
 
+void mountproc()
+{
+    namespace fs = std::filesystem;
+    info("Mounting proc on /proc");
+    if (!fs::exists("/sys"))
+    {
+        if (mkdir("/proc", 0755) != 0)
+        {
+            error(std::format("Can't mount proc on /proc: {}", strerror(errno))); return;
+        }
+    }
+    if (mount("proc", "/proc", "proc", 0, nullptr) != 0)
+    {
+        error(std::format("Can't mount sysfs on /sys: {}", strerror(errno)));
+    }
+}
+
 void checkpid()
 {
     if (getpid() != 1)
@@ -144,6 +164,8 @@ int main()
     if (!is_mounted("/sys"))
         if (mountsys())
             mountefivarfs();
+    if (!is_mounted("/proc"))
+        mountproc();
 
     if (!std::filesystem::exists("/etc/zinit.conf")) { panic("Can't find config file"); }
     std::unordered_map<std::string, std::string> configMap = parseFile("/etc/zinit.conf");
