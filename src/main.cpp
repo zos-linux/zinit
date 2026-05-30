@@ -13,8 +13,18 @@
 #include "sserver/init-socket.h"
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sys/wait.h>
 #include "serviced.h"
+#include "csignal"
 using namespace rang;
+
+int sigchld;
+
+static void sigchld_handler(int sig)
+{
+    (void)sig;
+    sigchld = 1;
+}
 
 bool is_mounted(const char* path)
 {
@@ -155,6 +165,7 @@ bool isvalidservicedcommand(const std::string& command)
 int main()
 {
     checkpid();
+    signal(SIGCHLD, sigchld_handler);
     std::cout << fg::green << "Welcome to " << fg::blue << detectos() << "!" << fg::reset << std::endl << std::endl;
 
     if (!is_mounted("/dev"))
@@ -307,6 +318,13 @@ int main()
             {
                 close(client_fd);
             }
+        }
+        if (sigchld == 1)
+        {
+            sigchld = 0;
+            int pid;
+            int status;
+            while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {}
         }
     }
 }
