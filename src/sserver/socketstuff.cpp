@@ -13,7 +13,7 @@
 int init_main_socket(int& server_fd)
 {
 	info("Opening an UNIX socket in the /run/zinit/init.sock file");
-	server_fd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+	server_fd = socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
 	if (server_fd < 0)
 	{
 		error(std::format("Can't open UNIX socket: {}", strerror(errno)));
@@ -41,7 +41,7 @@ int init_main_socket(int& server_fd)
 int init_serviced_socket(int& server_fd)
 {
 	info("Opening an UNIX socket in the /run/zinit/serviced.sock file");
-	server_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+	server_fd = socket(AF_UNIX, SOCK_SEQPACKET, 0);
 	if (server_fd < 0)
 	{
 		error(std::format("Can't open UNIX socket: {}", strerror(errno)));
