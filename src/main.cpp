@@ -18,7 +18,7 @@
 #include "csignal"
 using namespace rang;
 
-int sigchld;
+volatile int sigchld;
 
 static void sigchld_handler(int sig)
 {
