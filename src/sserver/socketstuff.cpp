@@ -40,7 +40,7 @@ int init_main_socket(int& server_fd)
 
 int init_serviced_socket(int& server_fd)
 {
-	info("Opening an UNIX socket in the /run/zinit/serviced.sock file");
+	info("Opening an UNIX socket in the /run/zinit/init.sock file");
 	server_fd = socket(AF_UNIX, SOCK_SEQPACKET, 0);
 	if (server_fd < 0)
 	{
@@ -50,8 +50,8 @@ int init_serviced_socket(int& server_fd)
 
 	sockaddr_un addr{};
 	addr.sun_family = AF_UNIX;
-	strcpy(addr.sun_path, "/run/zinit/serviced.sock");
-	unlink("/run/zinit/serviced.sock");
+	strcpy(addr.sun_path, "/run/zinit/init.sock");
+	unlink("/run/zinit/init.sock");
 
 	if (bind(server_fd, (sockaddr*)&addr, sizeof(addr)) < 0) {
 		error(std::format("Can't bind UNIX socket: {}", strerror(errno)));
