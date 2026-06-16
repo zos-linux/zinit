@@ -17,6 +17,7 @@
 #include "serviced-svu.h"
 #include <sys/epoll.h>
 #include <fcntl.h>
+#include <sys/reboot.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "sserver/init-socket.h"
@@ -427,14 +428,17 @@ int main()
 							sv = find_sv_by_name(sstruct.arg, services);
 						}
 					}
-					else if (sstruct.cmd == "INIT_POWEROFF" || sstruct.cmd == "INIT_REBOOT")
-					{
+					else if (sstruct.cmd == "INIT_POWEROFF" || sstruct.cmd == "INIT_REBOOT") {
 						for (Service& s : services)
 						{
 							stop_service(s);
 							s.note = "Stopped due to a planned shutdown/restart";
 						}
-						response = std::format("SD_SUCCESS");
+						response = std::format("Shutting down...");
+						if (sstruct.cmd == "INIT_POWEROFF")
+							initreboot();
+						else
+							inithalt();
 					}
 					else if (sstruct.cmd == "SD_SVREFRESH")
 					{
