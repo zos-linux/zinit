@@ -180,14 +180,14 @@ int main(int argc, char* argv[])
 			else
 			{
 				std::cout << fg::blue << service.name << fg::reset << std::endl;
-				std::cout << "  ⸠ " << fg::blue << "Service type: " << fg::reset << service.type << std::endl;
-				std::cout << "  ⸠ " << fg::blue << "Dependencies: " << fg::reset;
+				std::cout << "  ├─" << fg::blue << "Service type: " << fg::reset << service.type << std::endl;
+				std::cout << "  ├─" << fg::blue << "Dependencies: " << fg::reset;
 				for (const auto& dep : service.deps ) { std::cout << dep; std::cout << " "; } std::cout << std::endl;
-				std::cout << "  ⸠ " << fg::blue << "Running: ";
+				std::cout << "  ├─" << fg::blue << "Running: ";
 				if (service.running) { std::cout << fg::green << "Yes" << fg::reset << std::endl; } else { std::cout << fg::red << "No" << fg::reset << std::endl; }
-				std::cout << "  ⸠ " << fg::blue << "Pid: " << fg::reset;
+				std::cout << "  ├─" << fg::blue << "Pid: " << fg::reset;
 				if (service.running) { std::cout << service.pid << std::endl; } else { std::cout << "N/A" << std::endl; }
-				std::cout << "  ⎣ " << fg::blue << "Note: " << fg::reset << service.note << std::endl;
+				std::cout << "  └─" << fg::blue << "Note: " << fg::reset << service.note << std::endl;
 			}
 		}
 		else
