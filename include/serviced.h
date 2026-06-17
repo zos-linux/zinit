@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+
 struct Service
 {
 	std::string name;
@@ -12,7 +13,7 @@ struct Service
 
 	bool autorestart = true;
 	bool running = false;
-	pid_t pid = -1;
+	int pid = -1;
 
 	int restartcount = 1;
 	std::string note;

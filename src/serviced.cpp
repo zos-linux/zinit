@@ -22,11 +22,11 @@
 #include <sys/un.h>
 #include "sserver/init-socket.h"
 
-void sigchldhandler([[maybe_unused]] int sig)
+volatile int sigchld;
+
+static void sigchldhandler([[maybe_unused]] int sig)
 {
-	int status;
-	[[maybe_unused]] pid_t process_pid;
-	while ((process_pid = waitpid(-1, &status, WNOHANG)) > 0);
+	sigchld = 1;
 }
 
 // it should look more polished over time
@@ -228,6 +228,7 @@ void stop_service(Service& s)
 int main()
 {
 	signal(SIGTERM, SIG_IGN);
+	signal(SIGCHLD, sigchldhandler);
 
 	if (getppid() != 1)
 	{
@@ -465,40 +466,41 @@ int main()
 			}
 		}
 
-		pid_t pid = waitpid(-1, &status, WNOHANG);
-
-		if (pid > 0)
+		if (sigchld == 1)
 		{
-			for (auto& s : services)
+			while (pid_t pid = waitpid(-1, &status, WNOHANG) > 0)
 			{
-				if (s.pid == pid)
+				for (auto& s : services)
 				{
-					s.running = false;
-					if (s.autorestart)
+					if (s.pid == pid)
 					{
-						if (s.restartcount < 5)
+						s.running = false;
+						if (s.autorestart)
 						{
-							s.restartcount++;
-							start_service(s);
+							if (s.restartcount < 5)
+							{
+								s.restartcount++;
+								start_service(s);
+							}
+							else
+							{
+								s.note = "Service failed to start.\n";
+								s.pid = -1;
+								error(std::format("Service {} failed to start.", s.name));
+							}
 						}
 						else
 						{
-							s.note = "Service failed to start.\n";
 							s.pid = -1;
-							error(std::format("Service {} failed to start.", s.name));
-						}
-					}
-					else
-					{
-						s.pid = -1;
-						if (WEXITSTATUS(status) != 0)
-						{
-							error(std::format("Service {} exited with status {}", s.name, WEXITSTATUS(status)));
-							s.note = std::format("Service exited with status {}", WEXITSTATUS(status));
-						}
-						else
-						{
-							s.note = "Service exited normally.";
+							if (WEXITSTATUS(status) != 0)
+							{
+								error(std::format("Service {} exited with status {}", s.name, WEXITSTATUS(status)));
+								s.note = std::format("Service exited with status {}", WEXITSTATUS(status));
+							}
+							else
+							{
+								s.note = "Service exited normally.";
+							}
 						}
 					}
 				}

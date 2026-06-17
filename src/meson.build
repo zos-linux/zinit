@@ -1,5 +1,3 @@
-njson = dependency('nlohmann_json', required: true)
-
 initsrc = files(
     'main.cpp',
     'osdetector.cpp',
@@ -14,7 +12,6 @@ executable(
     'zinit',
     initsrc,
     include_directories: inc,
-    dependencies: njson,
     install: true,
     install_dir: get_option('sbindir')
 )
@@ -32,7 +29,6 @@ executable(
     'zinit-serviced',
     servicedsrc,
     include_directories: inc,
-    dependencies: njson,
     install: true,
     install_dir: get_option('sbindir')
 )
@@ -48,6 +44,5 @@ executable(
     'systemctl',
     systemctlsrc,
     include_directories: inc,
-    dependencies: njson,
     install: true
 )
