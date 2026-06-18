@@ -4,7 +4,7 @@ set -e
 if [ -f "/vmlinuz" ]; then
   cp -v /vmlinuz ./bzImage
 else
-  cp -v /boot/vmlinuz-$(uname -r)* ./bzImage
+  cp -v /boot/vmlinuz-* ./bzImage
 fi
 
 if [ -f ./initramfs.img ]; then
@@ -14,6 +14,6 @@ else
   exit 1
 fi
 
-qemu-system-x86_64 -m 2G -kernel bzImage -initrd ./initramfs.img -append "console=ttyS0 rdinit=/init" -net user -net nic $@
+qemu-system-x86_64 -m 2G -kernel bzImage -initrd ./initramfs.img -append "console=ttyS0 rdinit=/sbin/init" -net user -net nic $@
 
 rm ./bzImage
