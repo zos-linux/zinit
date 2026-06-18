@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 set -e
 
 if [ -e "./initramfs-tmp" ]; then
@@ -29,6 +29,10 @@ if [[ $NAME = "Devuan GNU/Linux" ]]; then
   LIB="/usr/lib/x86_64-linux-gnu/"
 else
   LIB="/usr/lib64"
+fi
+
+if [[ $NAME = "Alpine Linux" ]]; then
+	LIB="/lib"
 fi
 
 mkdir -p usr/lib/gcc/$(uname -m)-pc-linux-gnu/$(gcc -dumpversion)/
