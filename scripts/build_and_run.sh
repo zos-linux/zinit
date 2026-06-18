@@ -2,5 +2,10 @@
 set -e
 
 # duh
-./build_initramfs.sh
+
+source /etc/os-release
+
+if [[ $NAME = "Alpine Linux" ]]; then
+    ./build_initramfs.sh
+then
 ./run_initramfs.sh
