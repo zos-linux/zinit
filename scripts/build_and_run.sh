@@ -7,5 +7,5 @@ source /etc/os-release
 
 if [[ $NAME = "Alpine Linux" ]]; then
     ./build_initramfs.sh
-then
+fi
 ./run_initramfs.sh
