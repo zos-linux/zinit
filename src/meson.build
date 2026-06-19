@@ -7,6 +7,7 @@ initsrc = files(
 )
 
 inc = include_directories('../include')
+tomlplusplus = dependency('tomlplusplus')
 
 executable(
     'zinit',
@@ -30,6 +31,7 @@ executable(
     servicedsrc,
     include_directories: inc,
     install: true,
+    dependencies: tomlplusplus,
     install_dir: get_option('sbindir')
 )
 
