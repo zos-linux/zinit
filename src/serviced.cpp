@@ -236,9 +236,9 @@ int main()
 		return 1;
 	}
 
-	if (!std::filesystem::exists("/etc/zinit.conf")) { panic("Can't find config file"); }
-	std::unordered_map<std::string, std::string> configMap = parseFile("/etc/zinit.conf");
-	checkconfigmap(configMap);
+    if (!std::filesystem::exists("/etc/zinit.conf")) { panic("Can't find config file"); }
+    std::unordered_map<std::string, std::string> configMap = parseFile("/etc/zinit.conf");
+    checkconfigmap(configMap);
 
 	int ssocket_fd;
 	if (init_serviced_socket(ssocket_fd) != 0)

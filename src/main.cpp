@@ -178,33 +178,21 @@ int main()
     if (!is_mounted("/proc"))
         mountproc();
 
-    if (!std::filesystem::exists("/etc/zinit.conf")) { panic("Can't find config file"); }
-    std::unordered_map<std::string, std::string> configMap = parseFile("/etc/zinit.conf");
-    if (!configMap.contains("SERVICED_PATH"))
-    {
-        configMap["SERVICED_PATH"] = "/usr/sbin/zinit-serviced";
-    }
+    //if (!std::filesystem::exists("/etc/zinit.conf")) { panic("Can't find config file"); }
+    //std::unordered_map<std::string, std::string> configMap = parseFile("/etc/zinit.conf");
 
-    if (std::filesystem::exists(configMap.at("SERVICED_PATH")) && access(configMap.at("SERVICED_PATH").c_str(), X_OK) == 0)
+    info("Starting zinit-serviced...");
+    pid_t serviced_pid = fork();
+    if (serviced_pid == 0)
     {
-        info("Starting zinit-serviced...");
-        pid_t serviced_pid = fork();
-        if (serviced_pid == 0)
-        {
-            char *serviced_argv[] = {"zinit-serviced", nullptr};
-            execve(configMap.at("SERVICED_PATH").c_str(), serviced_argv, nullptr);
-            panic("zinit-serviced exited");
-            _exit(1);
-        }
+        char *serviced_argv[] = {"zinit-serviced", nullptr};
+        execve("/usr/sbin/zinit-serviced", serviced_argv, nullptr);
+        panic("zinit-serviced exited");
+        _exit(1);
     }
-    else
-    {
-        panic("Can't start zinit-serviced");
-    }
-
-    while (sigchld == 1)
+    while (true) { while (sigchld == 1)
     {
         sigchld = 0;
         while (waitpid(-1, nullptr, WNOHANG) > 0);
-    }
+    }}
 }
